@@ -10,16 +10,30 @@ import Dashboard from './components/Dashboard';
 import Stats from './components/Stats';
 import Profile from './components/Profile';
 import Navigation from './components/Navigation';
+import SplashScreen from './components/SplashScreen';
+import Onboarding from './components/Onboarding';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'stats' | 'profile'>('dashboard');
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [logs, setLogs] = useState<DayLog[]>(DEFAULT_LOGS);
 
-  // Load from local storage on component mount
+  // Splash & Onboarding states
+  const [showSplash, setShowSplash] = useState(true);
+  const [hasOnboarded, setHasOnboarded] = useState(false);
+
+  // PWA installation states
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  // Load from local storage on component mount & listen for PWA install prompt
   useEffect(() => {
     const cachedProfile = localStorage.getItem('wellnesspro_profile');
     const cachedLogs = localStorage.getItem('wellnesspro_logs');
+    const cachedOnboarded = localStorage.getItem('wellnesspro_onboarded') === 'true';
+
+    setHasOnboarded(cachedOnboarded);
 
     if (cachedProfile) {
       try {
@@ -36,7 +50,36 @@ export default function App() {
         console.error('Failed to parse cached logs', err);
       }
     }
+
+    // Check if running as standalone PWA
+    const checkStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
+    setIsStandalone(!!checkStandalone);
+
+    // Listen for PWA install event
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
+
+  // Trigger PWA installation dialog
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+      setIsStandalone(true);
+    }
+  };
 
   // Sync profile edits
   const saveProfile = (newProfile: UserProfile) => {
@@ -67,8 +110,10 @@ export default function App() {
   const handleResetData = () => {
     localStorage.removeItem('wellnesspro_profile');
     localStorage.removeItem('wellnesspro_logs');
+    localStorage.removeItem('wellnesspro_onboarded');
     setProfile(DEFAULT_PROFILE);
     setLogs(DEFAULT_LOGS);
+    setHasOnboarded(false);
     setActiveTab('dashboard');
   };
 
@@ -79,38 +124,56 @@ export default function App() {
       {/* Outer wrapper to center and emulate a professional preview boundary */}
       <div className="w-full max-w-md mx-auto min-h-screen bg-gray-50 flex flex-col relative shadow-md">
         
-        {/* Render Tab Views Dynamically */}
-        <main className="flex-1 w-full bg-slate-50/40">
-          {activeTab === 'dashboard' && (
-            <Dashboard 
-              profile={profile} 
-              todayLog={todayLog} 
-              updateTodayLog={updateTodayLog}
-              onNavigate={setActiveTab}
-            />
-          )}
+        {showSplash ? (
+          <SplashScreen onComplete={() => setShowSplash(false)} />
+        ) : !hasOnboarded ? (
+          <Onboarding 
+            profile={profile} 
+            saveProfile={saveProfile} 
+            onComplete={() => {
+              setHasOnboarded(true);
+              localStorage.setItem('wellnesspro_onboarded', 'true');
+            }} 
+          />
+        ) : (
+          <>
+            {/* Render Tab Views Dynamically */}
+            <main className="flex-1 w-full bg-slate-50/40">
+              {activeTab === 'dashboard' && (
+                <Dashboard 
+                  profile={profile} 
+                  todayLog={todayLog} 
+                  updateTodayLog={updateTodayLog}
+                  onNavigate={setActiveTab}
+                />
+              )}
 
-          {activeTab === 'stats' && (
-            <Stats 
-              profile={profile} 
-              logs={logs} 
-            />
-          )}
+              {activeTab === 'stats' && (
+                <Stats 
+                  profile={profile} 
+                  logs={logs} 
+                />
+              )}
 
-          {activeTab === 'profile' && (
-            <Profile 
-              profile={profile} 
-              saveProfile={saveProfile}
-              onResetData={handleResetData}
-            />
-          )}
-        </main>
+              {activeTab === 'profile' && (
+                <Profile 
+                  profile={profile} 
+                  saveProfile={saveProfile}
+                  onResetData={handleResetData}
+                  isInstallable={isInstallable}
+                  isStandalone={isStandalone}
+                  onInstall={handleInstallClick}
+                />
+              )}
+            </main>
 
-        {/* Global Bottom Tab Bar Panel */}
-        <Navigation 
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
-        />
+            {/* Global Bottom Tab Bar Panel */}
+            <Navigation 
+              activeTab={activeTab} 
+              setActiveTab={setActiveTab} 
+            />
+          </>
+        )}
       </div>
     </div>
   );

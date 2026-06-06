@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Flame, Moon, Droplet, Check, ShieldCheck, RefreshCw, UserCheck } from 'lucide-react';
+import { User, Flame, Moon, Droplet, Check, ShieldCheck, RefreshCw, UserCheck, Download, Smartphone, Laptop, Share2, HelpCircle, Info, Sparkles } from 'lucide-react';
 import { UserProfile } from '../types';
 
 interface ProfileProps {
   profile: UserProfile;
   saveProfile: (newProfile: UserProfile) => void;
   onResetData: () => void;
+  isInstallable?: boolean;
+  isStandalone?: boolean;
+  onInstall?: () => void;
 }
 
-export default function Profile({ profile, saveProfile, onResetData }: ProfileProps) {
+export default function Profile({ 
+  profile, 
+  saveProfile, 
+  onResetData,
+  isInstallable = false,
+  isStandalone = false,
+  onInstall
+}: ProfileProps) {
   const [name, setName] = useState(profile.name);
   const [calorieGoal, setCalorieGoal] = useState(profile.calorieGoal);
   const [sleepGoal, setSleepGoal] = useState(profile.sleepGoal);
@@ -228,6 +238,97 @@ export default function Profile({ profile, saveProfile, onResetData }: ProfilePr
             Apply Changes
           </button>
         </form>
+
+        {/* PWA Installation Section */}
+        <section className="mt-5 p-5 bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-2xl shadow-sm space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-primary/10 rounded-xl text-primary">
+              <Sparkles className="w-4 h-4 fill-current" />
+            </div>
+            <div>
+              <h4 className="text-sm font-extrabold text-slate-850">Jadikan Aplikasi Standalone</h4>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Bukan Sekadar Website</p>
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-600 leading-relaxed font-medium">
+            Pasang <strong>WellnessPro</strong> langsung ke HP atau Laptop Anda. Aplikasi akan memiliki ikon sendiri di layar utama, berjalan mandiri tanpa browser bar, dan dapat dibuka dengan sangat cepat bahkan saat keadaan offline.
+          </p>
+
+          {isStandalone ? (
+            <div className="flex items-center gap-2.5 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-800">
+              <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">
+                ✓
+              </div>
+              <div className="text-xs font-semibold">
+                WellnessPro sudah berjalan sebagai Aplikasi Resmi!
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {isInstallable && onInstall ? (
+                <button
+                  type="button"
+                  onClick={onInstall}
+                  className="w-full py-2.5 px-4 bg-primary hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2 text-xs active:scale-95 transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  Pasang Sekarang (Instal)
+                </button>
+              ) : (
+                <div className="text-xs bg-slate-50 border border-slate-100 p-3 rounded-lg text-slate-600 space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-700">
+                    <Info className="w-3.5 h-3.5 text-primary" />
+                    Bagaimana cara memasangnya?
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Jika tombol pasang tidak muncul, peranti Anda dapat memasangnya secara manual dengan cara berikut:
+                  </p>
+                </div>
+              )}
+
+              {/* Step-by-step instructions */}
+              <div className="grid grid-cols-1 gap-2.5 pt-1">
+                {/* iOS Instructions */}
+                <div className="p-3 bg-white border border-slate-100 rounded-xl flex items-start gap-2.5 shadow-sm">
+                  <Smartphone className="w-4 h-4 text-slate-600 mt-0.5 shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-bold text-slate-800">Pengguna iPhone & iPad (Safari):</p>
+                    <ol className="text-[10px] text-slate-500 list-decimal pl-4 space-y-0.5 font-semibold">
+                      <li>Ketuk tombol <strong className="text-primary font-bold">Bagikan (Share)</strong> <Share2 className="w-3 h-3 inline-block align-text-bottom text-primary" /> di Safari.</li>
+                      <li>Scroll ke bawah dan ketuk <strong className="text-primary font-bold">"Tambahkan ke Layar Utama" (Add to Home Screen)</strong>.</li>
+                      <li>Selesai! Buka WellnessPro langsung dari homescreen Anda.</li>
+                    </ol>
+                  </div>
+                </div>
+
+                {/* Android Instructions */}
+                <div className="p-3 bg-white border border-slate-100 rounded-xl flex items-start gap-2.5 shadow-sm">
+                  <Smartphone className="w-4 h-4 text-slate-600 mt-0.5 shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-bold text-slate-800">Pengguna Android (Chrome):</p>
+                    <ol className="text-[10px] text-slate-500 list-decimal pl-4 space-y-0.5 font-semibold">
+                      <li>Ketuk tombol <strong className="text-primary">menu titik tiga (⋮)</strong> di kanan atas Chrome.</li>
+                      <li>Pilih menu <strong className="text-primary">"Instal aplikasi"</strong> atau <strong className="text-primary">"Tambahkan ke Layar Utama"</strong>.</li>
+                    </ol>
+                  </div>
+                </div>
+
+                {/* Desktop Instructions */}
+                <div className="p-3 bg-white border border-slate-100 rounded-xl flex items-start gap-2.5 shadow-sm">
+                  <Laptop className="w-4 h-4 text-slate-600 mt-0.5 shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-bold text-slate-800">Pengguna PC & Mac (Chrome/Edge):</p>
+                    <ol className="text-[10px] text-slate-500 list-decimal pl-4 space-y-0.5 font-semibold">
+                      <li>Klik ikon <strong className="text-primary">Monitor Kecil (+ / Install)</strong> di ujung kanan kolom alamat browser Anda.</li>
+                      <li>Tekan <strong className="text-primary">Install / Pasang</strong> saat konfirmasi muncul.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
 
         {/* Seed & Utility Reset panel */}
         <section className="mt-5 mb-4">

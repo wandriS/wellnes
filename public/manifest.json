@@ -1,0 +1,18 @@
+{
+  "short_name": "WellnessPro",
+  "name": "WellnessPro Health Tracker",
+  "description": "Premium health and wellness tracker for calories, sleep, and hydration tracker.",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f1f5f9",
+  "theme_color": "#4f46e5",
+  "display": "standalone",
+  "orientation": "portrait"
+}
