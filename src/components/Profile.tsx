@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Flame, Moon, Droplet, Check, ShieldCheck, RefreshCw, UserCheck, Download, Smartphone, Laptop, Share2, HelpCircle, Info, Sparkles } from 'lucide-react';
+import { User, Check, ShieldCheck, UserCheck, Upload, Trash2, RefreshCw } from 'lucide-react';
 import { UserProfile } from '../types';
 
 interface ProfileProps {
@@ -10,6 +10,8 @@ interface ProfileProps {
   isInstallable?: boolean;
   isStandalone?: boolean;
   onInstall?: () => void;
+  darkMode?: boolean;
+  toggleDarkMode?: () => void;
 }
 
 export default function Profile({ 
@@ -18,28 +20,27 @@ export default function Profile({
   onResetData,
   isInstallable = false,
   isStandalone = false,
-  onInstall
-}: ProfileProps) {
+  onInstall,
+  darkMode = false,
+  toggleDarkMode
+ }: ProfileProps) {
   const [name, setName] = useState(profile.name);
-  const [calorieGoal, setCalorieGoal] = useState(profile.calorieGoal);
-  const [sleepGoal, setSleepGoal] = useState(profile.sleepGoal);
-  const [hydrationGoal, setHydrationGoal] = useState(profile.hydrationGoal);
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl);
   const [showSavedToast, setShowSavedToast] = useState(false);
 
-  // Avatar presets for quick changing or user preferences
+  // Nameless premium avatar presets with high resolution hand-picked images
   const AVATAR_PRESETS = [
     {
-      name: 'Sarah (Default)',
-      url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB_t4i-gQhWV503GiGzrNEREnzrWK0TjpI3dYbgsm3_GsyaaGiFDHPp6yv4h_C7H_bi-pwT9HEWNZnS95s4I0_vtHts3KAPU56WXUwlocq5fJa7y_kcBTWuVql-R6_3lTKoYrjVpUyzInINo_byiAb4sQVy_ssEPOqVe8ZmcjmRqdBDMeEce1NigC5uG5cCGZab4xk5TqaOz4FMH9w1U-jvoSb6tUMgt-LzsUOwQ57fEsV-Ozj7RL3jhe8HrIZV5i0txhaxtENAORk'
-    },
-    {
-      name: 'Michael',
-      url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150&h=150'
-    },
-    {
-      name: 'Elena',
+      id: 'avatar-p1',
       url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150'
+    },
+    {
+      id: 'avatar-p2',
+      url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150'
+    },
+    {
+      id: 'avatar-p3',
+      url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150'
     }
   ];
 
@@ -48,9 +49,9 @@ export default function Profile({
     saveProfile({
       name,
       avatarUrl,
-      calorieGoal: Number(calorieGoal),
-      sleepGoal: Number(sleepGoal),
-      hydrationGoal: Number(hydrationGoal)
+      calorieGoal: profile.calorieGoal, // Keep existing health targets unchanged in DB
+      sleepGoal: profile.sleepGoal,     // Keep existing health targets unchanged in DB
+      hydrationGoal: profile.hydrationGoal // Keep existing health targets unchanged in DB
     });
     
     // Provide tactile toast feedback
@@ -60,20 +61,42 @@ export default function Profile({
     }, 3000);
   };
 
+  // Convert uploaded image from file explorer/gallery into Base64 string for localStorage
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Ukuran gambar terlalu besar. Batas maksimal adalah 2MB agar performa aplikasi tetap optimal.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setAvatarUrl(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-    <div className="w-full pb-28">
-      {/* Top Bar */}
-      <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 flex items-center justify-between px-6 py-4.5 z-40 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
-        <h1 className="text-sm font-bold uppercase tracking-widest text-slate-800 mx-auto">Configure Profile</h1>
+    <div className={`w-full pb-28 min-h-screen transition-colors duration-205 ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50/20'}`}>
+      {/* Top Bar Check */}
+      <header className={`fixed top-0 left-0 right-0 border-b flex items-center justify-between px-6 py-4.5 z-40 shadow-[0_1px_3px_rgba(0,0,0,0.02)] max-w-md mx-auto transition-colors duration-200 ${
+        darkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-805'
+      }`}>
+        <h1 className="text-sm font-bold uppercase tracking-widest mx-auto">Configure Profile</h1>
       </header>
 
       {/* Main Container */}
       <div className="px-5 pt-16 max-w-md mx-auto">
         
         {/* User Badge Header */}
-        <div className="flex flex-col items-center text-center my-6 space-y-2">
+        <div className="flex flex-col items-center text-center my-6 space-y-2 animate-fade-in">
           <div className="relative group">
-            <div className="w-24 h-24 rounded-full overflow-hidden border border-slate-200 shadow-[0_2px_8px_rgba(15,23,42,0.05)] bg-[#f8fafc]">
+            <div className={`w-24 h-24 rounded-full overflow-hidden border shadow-[0_2px_8px_rgba(15,23,42,0.05)] transition-colors ${
+              darkMode ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-[#f8fafc]'
+            }`}>
               <img 
                 alt="Profile Avatar Large" 
                 className="w-full h-full object-cover" 
@@ -82,17 +105,52 @@ export default function Profile({
               />
             </div>
             <span className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-md text-xs border-2 border-white flex items-center justify-center">
-              <User className="w-3 h-3" />
+              <User className="w-3.5 h-3.5" />
             </span>
           </div>
           <div>
-            <h2 className="text-base font-extrabold text-slate-900 flex items-center justify-center gap-1.5 leading-none">
-              {profile.name}
+            <h2 className={`text-base font-extrabold flex items-center justify-center gap-1.5 leading-none ${
+              darkMode ? 'text-white' : 'text-slate-900'
+            }`}>
+              {name || 'User'}
               <UserCheck className="w-4 h-4 text-primary" />
             </h2>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Premium Member</p>
           </div>
         </div>
+
+        {/* Global Dark Mode Switch Toggle Component */}
+        {toggleDarkMode && (
+          <div className={`mb-5 p-4.5 rounded-2xl border shadow-sm flex items-center justify-between transition-colors duration-200 ${
+            darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2.5 rounded-xl transition-all ${darkMode ? 'bg-indigo-500/15 text-indigo-400' : 'bg-indigo-50 text-indigo-650'}`}>
+                <User className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className={`text-xs font-black uppercase tracking-widest ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+                  Gaya Gelap (Dark Mode)
+                </h4>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">
+                  Ubah tampilan aplikasi
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className={`w-12 h-6.5 rounded-full p-1 transition-colors cursor-pointer outline-none ${
+                darkMode ? 'bg-primary' : 'bg-slate-200'
+              }`}
+            >
+              <div className={`w-4.5 h-4.5 bg-white rounded-full shadow-md transform transition-transform duration-200 ${
+                darkMode ? 'translate-x-5.5' : 'translate-x-0'
+              }`} />
+            </button>
+          </div>
+        )}
 
         {/* Save Confirmation Toast pop-up */}
         <AnimatePresence>
@@ -105,251 +163,150 @@ export default function Profile({
             >
               <ShieldCheck className="w-4.5 h-4.5 fill-current text-white/90" />
               <div className="text-xs font-semibold">
-                Success! Vitality settings saved to browser cache.
+                Berhasil! Profil kustom Anda telah disimpan.
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Global Configuration Form */}
-        <form onSubmit={handleFormSubmit} className="space-y-5 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 mb-2">Metrics Settings</h3>
+        <form onSubmit={handleFormSubmit} className={`space-y-5 rounded-2xl p-5 border shadow-sm transition-colors duration-200 ${
+          darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+        }`}>
+          <h3 className={`text-xs font-bold uppercase tracking-widest border-b pb-2 mb-2 ${
+            darkMode ? 'text-slate-400 border-slate-805/30' : 'text-slate-400 border-slate-100'
+          }`}>Pengaturan Profil</h3>
 
           {/* User Name input */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Your Name</label>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Nama Anda</label>
             <input 
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:border-slate-500 focus:ring-1 focus:ring-slate-300 focus:outline-none rounded-xl font-medium text-sm text-slate-800"
+              className={`w-full px-3.5 py-2.5 border rounded-xl font-medium text-sm focus:outline-none transition-colors ${
+                darkMode 
+                  ? 'bg-slate-800 border-slate-700 text-white focus:border-slate-500' 
+                  : 'bg-slate-50 border-slate-200 text-slate-805 focus:border-slate-500'
+              }`}
+              placeholder="Ketik nama Anda..."
             />
           </div>
 
-          {/* Avatar Option Selectors */}
-          <div className="space-y-1.5">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Choose Avatar Profile</label>
-            <div className="flex gap-2.5">
+          {/* Avatar Option Selectors - Nameless, clean clickable round pictures */}
+          <div className="space-y-2">
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Pilih Foto Pilihan (Preset)</label>
+            <div className="flex gap-4 justify-center py-1">
               {AVATAR_PRESETS.map((p) => {
                 const selected = avatarUrl === p.url;
                 return (
                   <button
-                    key={p.name}
+                    key={p.id}
                     type="button"
                     onClick={() => setAvatarUrl(p.url)}
-                    className={`flex-1 flex flex-col items-center p-2 rounded-xl border transition-all cursor-pointer ${
+                    className={`relative w-14 h-14 rounded-full overflow-hidden border-2 transition-all cursor-pointer ${
                       selected 
-                        ? 'border-primary bg-indigo-50/40 text-primary font-bold shadow-sm' 
-                        : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                        ? 'border-primary scale-105 ring-4 ring-indigo-500/10' 
+                        : darkMode
+                          ? 'border-slate-700 hover:border-slate-500'
+                          : 'border-slate-200 hover:border-slate-350'
                     }`}
                   >
                     <img 
                       src={p.url} 
-                      alt={p.name} 
-                      className="w-8 h-8 rounded-full object-cover border border-slate-100 shadow-sm"
+                      alt={`Avatar option ${p.id}`} 
+                      className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />
-                    <span className="text-[10px] font-bold mt-1.5">{p.name.split(' ')[0]}</span>
+                    {selected && (
+                      <div className="absolute inset-0 bg-primary/15 flex items-center justify-center">
+                        <div className="bg-primary text-white p-1 rounded-full scale-90">
+                          <Check className="w-3 h-3 stroke-[3.5]" />
+                        </div>
+                      </div>
+                    )}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Calorie burn goal slider */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 text-[10px]">
-                <Flame className="w-3.5 h-3.5 text-primary fill-current" />
-                Active Burn Goal
-              </span>
-              <span className="font-extrabold text-slate-800">{calorieGoal} kcal</span>
-            </div>
-            <input 
-              type="range"
-              min="1000"
-              max="4000"
-              step="50"
-              value={calorieGoal}
-              onChange={(e) => setCalorieGoal(Number(e.target.value))}
-              className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-bold px-0.5">
-              <span>1,000 kcal</span>
-              <span>4,000 kcal</span>
-            </div>
-          </div>
+          {/* Uploader Dari Galeri */}
+          <div className={`space-y-2 pt-3.5 border-t ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Atau Unggah dari Galeri</label>
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <input 
+                type="file"
+                id="avatar-gallery-upload"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              <label 
+                htmlFor="avatar-gallery-upload"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider cursor-pointer active:scale-95 transition-all shadow-sm ${
+                  darkMode 
+                    ? 'bg-slate-800 hover:bg-slate-700 border-slate-705 text-slate-200' 
+                    : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                }`}
+              >
+                <Upload className="w-4 h-4 text-primary" />
+                Pilih Foto dari Galeri
+              </label>
 
-          {/* Sleep duration goal slider */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 text-[10px]">
-                <Moon className="w-3.5 h-3.5 text-primary fill-current" />
-                Nightly Sleep target
-              </span>
-              <span className="font-extrabold text-slate-800">{sleepGoal} hours</span>
+              {avatarUrl.startsWith('data:image/') && (
+                <button
+                  type="button"
+                  onClick={() => setAvatarUrl(AVATAR_PRESETS[0].url)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider text-rose-500 hover:bg-rose-500/10 active:scale-95 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Hapus Foto Galeri
+                </button>
+              )}
             </div>
-            <input 
-              type="range"
-              min="4"
-              max="12"
-              step="0.5"
-              value={sleepGoal}
-              onChange={(e) => setSleepGoal(Number(e.target.value))}
-              className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-bold px-0.5">
-              <span>4 hrs</span>
-              <span>12 hrs</span>
-            </div>
-          </div>
-
-          {/* Daily hydration goal slider */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 text-[10px]">
-                <Droplet className="w-3.5 h-3.5 text-primary fill-current" />
-                Hydration target
-              </span>
-              <span className="font-extrabold text-slate-800">{hydrationGoal} glasses</span>
-            </div>
-            <input 
-              type="range"
-              min="4"
-              max="16"
-              step="1"
-              value={hydrationGoal}
-              onChange={(e) => setHydrationGoal(Number(e.target.value))}
-              className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-bold px-0.5">
-              <span>4 glasses</span>
-              <span>16 glasses</span>
-            </div>
+            <p className="text-[9px] text-slate-400 font-semibold leading-relaxed">
+              Dukung JPG, PNG, WebP hiasan profil kustom. Gambar diproses secara offline tanpa diunggah ke server luar guna menjaga privasi.
+            </p>
           </div>
 
           {/* Action button */}
           <button 
             type="submit" 
-            className="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer shadow-sm text-sm"
+            className="w-full py-3 bg-primary hover:bg-primary/95 text-white rounded-xl font-extrabold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer shadow-sm text-xs uppercase tracking-wider"
           >
             <Check className="w-4 h-4" />
-            Apply Changes
+            Simpan Perubahan
           </button>
         </form>
 
-        {/* PWA Installation Section */}
-        <section className="mt-5 p-5 bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-2xl shadow-sm space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-primary/10 rounded-xl text-primary">
-              <Sparkles className="w-4 h-4 fill-current" />
-            </div>
-            <div>
-              <h4 className="text-sm font-extrabold text-slate-850">Jadikan Aplikasi Standalone</h4>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Bukan Sekadar Website</p>
-            </div>
-          </div>
-
-          <p className="text-xs text-slate-600 leading-relaxed font-medium">
-            Pasang <strong>WellnessPro</strong> langsung ke HP atau Laptop Anda. Aplikasi akan memiliki ikon sendiri di layar utama, berjalan mandiri tanpa browser bar, dan dapat dibuka dengan sangat cepat bahkan saat keadaan offline.
-          </p>
-
-          {isStandalone ? (
-            <div className="flex items-center gap-2.5 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-800">
-              <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">
-                ✓
-              </div>
-              <div className="text-xs font-semibold">
-                WellnessPro sudah berjalan sebagai Aplikasi Resmi!
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {isInstallable && onInstall ? (
-                <button
-                  type="button"
-                  onClick={onInstall}
-                  className="w-full py-2.5 px-4 bg-primary hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2 text-xs active:scale-95 transition-all"
-                >
-                  <Download className="w-4 h-4" />
-                  Pasang Sekarang (Instal)
-                </button>
-              ) : (
-                <div className="text-xs bg-slate-50 border border-slate-100 p-3 rounded-lg text-slate-600 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-slate-700">
-                    <Info className="w-3.5 h-3.5 text-primary" />
-                    Bagaimana cara memasangnya?
-                  </div>
-                  <p className="text-[11px] text-slate-500">
-                    Jika tombol pasang tidak muncul, peranti Anda dapat memasangnya secara manual dengan cara berikut:
-                  </p>
-                </div>
-              )}
-
-              {/* Step-by-step instructions */}
-              <div className="grid grid-cols-1 gap-2.5 pt-1">
-                {/* iOS Instructions */}
-                <div className="p-3 bg-white border border-slate-100 rounded-xl flex items-start gap-2.5 shadow-sm">
-                  <Smartphone className="w-4 h-4 text-slate-600 mt-0.5 shrink-0" />
-                  <div className="space-y-1">
-                    <p className="text-[11px] font-bold text-slate-800">Pengguna iPhone & iPad (Safari):</p>
-                    <ol className="text-[10px] text-slate-500 list-decimal pl-4 space-y-0.5 font-semibold">
-                      <li>Ketuk tombol <strong className="text-primary font-bold">Bagikan (Share)</strong> <Share2 className="w-3 h-3 inline-block align-text-bottom text-primary" /> di Safari.</li>
-                      <li>Scroll ke bawah dan ketuk <strong className="text-primary font-bold">"Tambahkan ke Layar Utama" (Add to Home Screen)</strong>.</li>
-                      <li>Selesai! Buka WellnessPro langsung dari homescreen Anda.</li>
-                    </ol>
-                  </div>
-                </div>
-
-                {/* Android Instructions */}
-                <div className="p-3 bg-white border border-slate-100 rounded-xl flex items-start gap-2.5 shadow-sm">
-                  <Smartphone className="w-4 h-4 text-slate-600 mt-0.5 shrink-0" />
-                  <div className="space-y-1">
-                    <p className="text-[11px] font-bold text-slate-800">Pengguna Android (Chrome):</p>
-                    <ol className="text-[10px] text-slate-500 list-decimal pl-4 space-y-0.5 font-semibold">
-                      <li>Ketuk tombol <strong className="text-primary">menu titik tiga (⋮)</strong> di kanan atas Chrome.</li>
-                      <li>Pilih menu <strong className="text-primary">"Instal aplikasi"</strong> atau <strong className="text-primary">"Tambahkan ke Layar Utama"</strong>.</li>
-                    </ol>
-                  </div>
-                </div>
-
-                {/* Desktop Instructions */}
-                <div className="p-3 bg-white border border-slate-100 rounded-xl flex items-start gap-2.5 shadow-sm">
-                  <Laptop className="w-4 h-4 text-slate-600 mt-0.5 shrink-0" />
-                  <div className="space-y-1">
-                    <p className="text-[11px] font-bold text-slate-800">Pengguna PC & Mac (Chrome/Edge):</p>
-                    <ol className="text-[10px] text-slate-500 list-decimal pl-4 space-y-0.5 font-semibold">
-                      <li>Klik ikon <strong className="text-primary">Monitor Kecil (+ / Install)</strong> di ujung kanan kolom alamat browser Anda.</li>
-                      <li>Tekan <strong className="text-primary">Install / Pasang</strong> saat konfirmasi muncul.</li>
-                    </ol>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-
         {/* Seed & Utility Reset panel */}
         <section className="mt-5 mb-4">
-          <div className="bg-rose-50 border border-rose-200/65 rounded-2xl p-4 space-y-3 shadow-sm">
+          <div className={`border rounded-2xl p-4 space-y-3 shadow-sm transition-colors duration-201 ${
+            darkMode ? 'bg-rose-950/15 border-rose-900/40' : 'bg-rose-50 border-rose-200/65'
+          }`}>
             <div>
-              <h4 className="text-[10px] font-extrabold text-rose-800 uppercase tracking-widest">Advanced Actions</h4>
-              <p className="text-[11px] text-rose-700/80 font-semibold mt-0.5">
-                Clear all custom database additions and reset back to WellnessPro launch template files.
+              <h4 className={`text-[10px] font-extrabold uppercase tracking-widest ${darkMode ? 'text-rose-400' : 'text-rose-800'}`}>Advanced Actions</h4>
+              <p className={`text-[11px] font-semibold mt-0.5 ${darkMode ? 'text-rose-300' : 'text-rose-700/80'}`}>
+                Kembalikan semua tambahan di basis data ke pengaturan asal pabrikan WellnessPro.
               </p>
             </div>
-            
+
             <button
               type="button"
               onClick={() => {
-                if (window.confirm('Reset all goals and active progress values back to Sarah\'s initial 1,840 kcal start metrics?')) {
+                if (window.confirm("Apakah Anda yakin ingin menyetel ulang semua data? Tindakan ini tidak dapat dibatalkan.")) {
                   onResetData();
                 }
               }}
-              className="py-2.5 px-4 bg-white hover:bg-rose-100 text-rose-600 text-[11px] font-extrabold uppercase rounded-xl border border-rose-200 shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+              className={`py-2.5 px-4 font-extrabold uppercase rounded-xl border shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all text-[11px] ${
+                darkMode
+                  ? 'bg-slate-850 hover:bg-slate-800 text-rose-450 border-rose-900/35'
+                  : 'bg-white hover:bg-rose-100 text-rose-605 border-rose-200'
+              }`}
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className="w-3.5 h-3.5 animate-spin-slow" />
               Reset App Data Cache
             </button>
           </div>

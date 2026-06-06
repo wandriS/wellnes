@@ -2,7 +2,7 @@ import { UserProfile, DayLog } from './types';
 
 export const DEFAULT_PROFILE: UserProfile = {
   name: 'Sarah',
-  avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB_t4i-gQhWV503GiGzrNEREnzrWK0TjpI3dYbgsm3_GsyaaGiFDHPp6yv4h_C7H_bi-pwT9HEWNZnS95s4I0_vtHts3KAPU56WXUwlocq5fJa7y_kcBTWuVql-R6_3lTKoYrjVpUyzInINo_byiAb4sQVy_ssEPOqVe8ZmcjmRqdBDMeEce1NigC5uG5cCGZab4xk5TqaOz4FMH9w1U-jvoSb6tUMgt-LzsUOwQ57fEsV-Ozj7RL3jhe8HrIZV5i0txhaxtENAORk',
+  avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150',
   calorieGoal: 2200,
   sleepGoal: 8,
   hydrationGoal: 8

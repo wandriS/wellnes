@@ -21,6 +21,7 @@ export default function App() {
   // Splash & Onboarding states
   const [showSplash, setShowSplash] = useState(true);
   const [hasOnboarded, setHasOnboarded] = useState(false);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
 
   // PWA installation states
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -32,8 +33,10 @@ export default function App() {
     const cachedProfile = localStorage.getItem('wellnesspro_profile');
     const cachedLogs = localStorage.getItem('wellnesspro_logs');
     const cachedOnboarded = localStorage.getItem('wellnesspro_onboarded') === 'true';
+    const cachedDarkMode = localStorage.getItem('wellnesspro_dark_mode') === 'true';
 
     setHasOnboarded(cachedOnboarded);
+    setDarkMode(cachedDarkMode);
 
     if (cachedProfile) {
       try {
@@ -81,6 +84,13 @@ export default function App() {
     }
   };
 
+  // Toggle Dark Mode
+  const toggleDarkMode = () => {
+    const nextDark = !darkMode;
+    setDarkMode(nextDark);
+    localStorage.setItem('wellnesspro_dark_mode', String(nextDark));
+  };
+
   // Sync profile edits
   const saveProfile = (newProfile: UserProfile) => {
     setProfile(newProfile);
@@ -120,9 +130,9 @@ export default function App() {
   const todayLog = getTodayLog();
 
   return (
-    <div className="min-h-screen bg-[#F4F4F4] text-[#1a1c1c] font-sans antialiased selection:bg-primary/10">
+    <div className={`min-h-screen font-sans antialiased selection:bg-primary/10 transition-colors duration-200 ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-[#F4F4F4] text-[#1a1c1c]'}`}>
       {/* Outer wrapper to center and emulate a professional preview boundary */}
-      <div className="w-full max-w-md mx-auto min-h-screen bg-gray-50 flex flex-col relative shadow-md">
+      <div className={`w-full max-w-md mx-auto min-h-screen flex flex-col relative shadow-md transition-colors duration-200 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-gray-50'}`}>
         
         {showSplash ? (
           <SplashScreen onComplete={() => setShowSplash(false)} />
@@ -138,13 +148,14 @@ export default function App() {
         ) : (
           <>
             {/* Render Tab Views Dynamically */}
-            <main className="flex-1 w-full bg-slate-50/40">
+            <main className="flex-1 w-full bg-transparent overflow-y-auto">
               {activeTab === 'dashboard' && (
                 <Dashboard 
                   profile={profile} 
                   todayLog={todayLog} 
                   updateTodayLog={updateTodayLog}
                   onNavigate={setActiveTab}
+                  darkMode={darkMode}
                 />
               )}
 
@@ -152,6 +163,7 @@ export default function App() {
                 <Stats 
                   profile={profile} 
                   logs={logs} 
+                  darkMode={darkMode}
                 />
               )}
 
@@ -163,6 +175,8 @@ export default function App() {
                   isInstallable={isInstallable}
                   isStandalone={isStandalone}
                   onInstall={handleInstallClick}
+                  darkMode={darkMode}
+                  toggleDarkMode={toggleDarkMode}
                 />
               )}
             </main>
@@ -171,6 +185,7 @@ export default function App() {
             <Navigation 
               activeTab={activeTab} 
               setActiveTab={setActiveTab} 
+              darkMode={darkMode}
             />
           </>
         )}
