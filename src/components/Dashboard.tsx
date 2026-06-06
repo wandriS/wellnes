@@ -174,7 +174,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
                 <span className={`text-[38px] font-extrabold leading-none tracking-tight ${darkMode ? 'text-slate-50' : 'text-slate-900'}`}>
                   {todayLog.calories.toLocaleString()}
                 </span>
-                <span className="text-xs font-semibold text-slate-450">
+                <span className={`text-xs font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                   / {profile.calorieGoal.toLocaleString()} kcal
                 </span>
               </div>
@@ -216,7 +216,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
                 <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">Sleep</p>
                 <h3 className={`text-xl font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Rest Duration</h3>
               </div>
-              <div className="p-2.5 bg-indigo-55/15 rounded-xl text-primary flex items-center justify-center">
+              <div className="p-2.5 bg-indigo-500/10 rounded-xl text-primary flex items-center justify-center">
                 <Moon className="w-5 h-5 fill-current" />
               </div>
             </div>
@@ -226,7 +226,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
                 <span className={`text-[38px] font-extrabold leading-none tracking-tight ${darkMode ? 'text-slate-50' : 'text-slate-900'}`}>
                   {todayLog.sleep}
                 </span>
-                <span className="text-xs font-semibold text-slate-450">hours</span>
+                <span className={`text-xs font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>hours</span>
               </div>
               
               {/* Status Chip matching user photo */}
@@ -250,7 +250,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
           >
             <div className="flex flex-col">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-rose-500/10 rounded-xl text-rose-550 flex items-center justify-center">
+                <div className="p-2.5 bg-rose-500/10 rounded-xl text-rose-500 flex items-center justify-center">
                   <Droplet className="w-5 h-5 fill-current text-rose-500" />
                 </div>
                 <div>
@@ -260,7 +260,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
               </div>
               <div className="flex items-baseline gap-1.5 mt-4">
                 <span className={`text-[38px] font-extrabold leading-none tracking-tight ${darkMode ? 'text-slate-50' : 'text-slate-900'}`}>{todayLog.hydration}</span>
-                <span className="text-xs font-semibold text-slate-450">/ {profile.hydrationGoal} glasses</span>
+                <span className={`text-xs font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>/ {profile.hydrationGoal} glasses</span>
               </div>
             </div>
 
@@ -268,7 +268,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
             <div className="flex gap-2.5 items-center justify-between sm:justify-start mt-2 sm:mt-0">
               {/* Glass capsule indicator matrix */}
               <div className={`flex gap-1.5 p-2 rounded-xl border transition-colors duration-200 ${
-                darkMode ? 'bg-slate-850 border-slate-800' : 'bg-slate-50 border-slate-200'
+                darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'
               }`}>
                 {Array.from({ length: Math.max(8, profile.hydrationGoal) }).map((_, idx) => {
                   const filled = idx < todayLog.hydration;
@@ -303,7 +303,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
                     id="water-remove-btn"
                     onClick={() => adjustWater(-1)}
                     className={`w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-all cursor-pointer mx-auto mt-1 ${
-                      darkMode ? 'bg-slate-800 hover:bg-slate-705 text-slate-350' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                      darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-400' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
                     }`}
                     title="Remove Glass"
                   >
@@ -408,7 +408,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
                     value={calorieInput}
                     onChange={(e) => setCalorieInput(e.target.value)}
                     className={`w-full px-4 py-3 border rounded-xl focus:border-primary focus:outline-none font-semibold text-lg transition-colors ${
-                      darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-205 text-slate-900'
+                      darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-200 text-slate-900'
                     }`}
                   />
                 </div>
@@ -494,7 +494,7 @@ export default function Dashboard({ profile, todayLog, updateTodayLog, onNavigat
                     value={sleepInput}
                     onChange={(e) => setSleepInput(e.target.value)}
                     className={`w-full px-4 py-3 border rounded-xl focus:border-primary focus:outline-none font-semibold text-lg transition-colors ${
-                      darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-205 text-slate-850'
+                      darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-gray-50 border-gray-200 text-slate-800'
                     }`}
                   />
                 </div>

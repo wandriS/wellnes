@@ -110,7 +110,7 @@ export default function Stats({ profile, logs, darkMode = false }: StatsProps) {
                   ? 'bg-slate-800 text-primary border-slate-700 shadow-sm'
                   : 'bg-white text-primary border-slate-200 shadow-sm'
                 : darkMode
-                  ? 'text-slate-450 hover:text-slate-200 border-transparent'
+                  ? 'text-slate-400 hover:text-slate-200 border-transparent'
                   : 'text-slate-500 hover:text-slate-900 border-transparent'
             }`}
           >
@@ -125,7 +125,7 @@ export default function Stats({ profile, logs, darkMode = false }: StatsProps) {
                   ? 'bg-slate-800 text-primary border-slate-700 shadow-sm'
                   : 'bg-white text-primary border-slate-200 shadow-sm'
                 : darkMode
-                  ? 'text-slate-450 hover:text-slate-200 border-transparent'
+                  ? 'text-slate-400 hover:text-slate-200 border-transparent'
                   : 'text-slate-500 hover:text-slate-900 border-transparent'
             }`}
           >
@@ -140,7 +140,7 @@ export default function Stats({ profile, logs, darkMode = false }: StatsProps) {
                   ? 'bg-slate-800 text-primary border-slate-700 shadow-sm'
                   : 'bg-white text-primary border-slate-200 shadow-sm'
                 : darkMode
-                  ? 'text-slate-450 hover:text-slate-200 border-transparent'
+                  ? 'text-slate-400 hover:text-slate-200 border-transparent'
                   : 'text-slate-500 hover:text-slate-900 border-transparent'
             }`}
           >
@@ -162,7 +162,7 @@ export default function Stats({ profile, logs, darkMode = false }: StatsProps) {
               </div>
             </div>
 
-            <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-450 px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1">
+            <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400 px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
               +12% Trend
             </div>
@@ -279,13 +279,13 @@ export default function Stats({ profile, logs, darkMode = false }: StatsProps) {
               const thresholdY = 140 - (currentGoal / maxValue) * 120;
               return (
                 <div 
-                  className="absolute w-full border-t border-dashed border-rose-250 pointer-events-none" 
+                  className="absolute w-full border-t border-dashed border-rose-400/50 pointer-events-none" 
                   style={{ top: `${thresholdY}px` }}
                 >
                   <span className={`absolute right-0 text-[9px] font-extrabold px-1.5 py-0.5 rounded -mt-2.5 shadow-sm border ${
                     darkMode 
-                      ? 'bg-slate-800 text-rose-450 border-rose-950' 
-                      : 'bg-rose-50 text-rose-505 border-rose-100'
+                      ? 'bg-slate-800 text-rose-400 border-rose-900' 
+                      : 'bg-rose-50 text-rose-500 border-rose-100'
                   }`}>
                     Target: {currentGoal}
                   </span>
@@ -427,7 +427,7 @@ export default function Stats({ profile, logs, darkMode = false }: StatsProps) {
             <div className={`flex justify-between items-center pt-3 border-t ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
               <div className="flex items-center gap-2.5">
                 <span className={`p-2.5 rounded-xl border flex items-center justify-center ${
-                  darkMode ? 'bg-slate-850 border-slate-805 text-slate-300' : 'bg-slate-50 border border-slate-200 text-[#475569]'
+                  darkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-50 border border-slate-200 text-[#475569]'
                 }`}>
                   <Compass className="w-4 h-4 fill-current" />
                 </span>
