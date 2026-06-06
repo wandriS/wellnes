@@ -1,0 +1,8 @@
+{
+  "name": "Wellness",
+  "description": "A high-fidelity health and wellness tracker for monitoring calories, sleep duration, and daily hydration with historical analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
